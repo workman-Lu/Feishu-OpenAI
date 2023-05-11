@@ -51,11 +51,9 @@ func main() {
 	r.Use(func(c *gin.Context) {
 		start := time.Now()
 		var requestData RequestData
-
-		if err := c.ShouldBindJSON(&requestData); err != nil {
-			c.JSON(400, gin.H{"warming": "Invalid request data"})
-		}
-
+		json.Unmarshal(rawData, &requestData)
+		c.Request.Body = io.NopCloser(bytes.NewReader(rawData))
+		
 		userid := requestData.Event.UserID
 		content := requestData.Event.TextWithoutAtBot
 		defer func() {
