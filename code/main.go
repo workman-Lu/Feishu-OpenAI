@@ -38,8 +38,32 @@ func main() {
 	cardHandler := larkcard.NewCardActionHandler(
 		config.FeishuAppVerificationToken, config.FeishuAppEncryptKey,
 		handlers.CardHandler())
+	r.Use(func(c *gin.Context) {
+		start := time.Now()
+		var requestData RequestData
 
+		if err := c.ShouldBindJSON(&requestData); err != nil {
+			c.JSON(400, gin.H{"warming": "Invalid request data"})
+		}
+
+		userid := requestData.Event.UserID
+		content := requestData.Event.TextWithoutAtBot
+		defer func() {
+			fmt.Sprintf("[SEASUN] %v | %3d | %13v | %15s |%s %-7s\n",
+				start.Format("2006/01/02 - 15:04:05"),
+				c.Writer.Status(),
+				time.Now().Sub(start),
+				c.Request.RemoteAddr,
+				c.Request.Method,
+				c.Request.URL.Path,
+				userid,
+				content,
+			)
+		}()
+		c.Next()
+	})
 	r := gin.Default()
+	
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
