@@ -47,6 +47,7 @@ func main() {
 	cardHandler := larkcard.NewCardActionHandler(
 		config.FeishuAppVerificationToken, config.FeishuAppEncryptKey,
 		handlers.CardHandler())
+	r := gin.Default()
 	r.Use(func(c *gin.Context) {
 		start := time.Now()
 		var requestData RequestData
@@ -71,7 +72,6 @@ func main() {
 		}()
 		c.Next()
 	})
-	r := gin.Default()
 	
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
