@@ -20,6 +20,15 @@ var (
 	cfg = pflag.StringP("config", "c", "./config.yaml", "apiserver config file path.")
 )
 
+type Event struct {
+	UserID          string `json:"user_id"`
+	TextWithoutAtBot string `json:"text_without_at_bot"`
+}
+
+type RequestData struct {
+	Event Event `json:"event"`
+}
+
 func main() {
 	initialization.InitRoleList()
 	pflag.Parse()
